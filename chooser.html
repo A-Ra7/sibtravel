@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Определитель путешествий</title>
+    <style>
+    body {
+        background: linear-gradient(120deg, #e0f7fa 0%, #b2dfdb 100%);
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+    }
+    #game {
+        max-width: 500px;
+        margin: 40px auto;
+        background: rgba(255,255,255,0.97);
+        border-radius: 18px;
+        box-shadow: 0 6px 32px rgba(0,0,0,0.13);
+        padding: 36px 28px 28px 28px;
+        position: relative;
+        z-index: 1;
+    }
+    h1 {
+        text-align: center;
+        color: #00695c;
+        margin-bottom: 28px;
+        letter-spacing: 1px;
+        font-size: 2em;
+        text-shadow: 0 2px 8px #b2dfdb;
+    }
+    #scene p, #scene h2 {
+        font-size: 1.18em;
+        color: #37474f;
+        margin-bottom: 36px;
+        text-align: center;
+        line-height: 1.5;
+    }
+    #scene h2 {
+        color: #00897b;
+        margin-bottom: 18px;
+        font-size: 1.5em;
+        text-shadow: 0 2px 8px #b2dfdb;
+    }
+    #choices {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        align-items: center;
+    }
+    #choices button {
+        background: linear-gradient(90deg, #26a69a 0%, #43cea2 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 14px 36px;
+        font-size: 1.08em;
+        cursor: pointer;
+        transition: background 0.2s, transform 0.1s;
+        box-shadow: 0 2px 12px rgba(38,166,154,0.10);
+        font-weight: 500;
+        outline: none;
+    }
+    #choices button:hover, #choices button:focus {
+        background: linear-gradient(90deg, #00897b 0%, #26a69a 100%);
+        transform: translateY(-2px) scale(1.04);
+    }
+    @media (max-width: 600px) {
+        #game {
+            padding: 18px 4vw 18px 4vw;
+            max-width: 98vw;
+        }
+        h1 {
+            font-size: 1.3em;
+        }
+        #scene p, #scene h2 {
+            font-size: 1em;
+        }
+        #choices button {
+            font-size: 1em;
+            padding: 12px 10px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <h1>Определитель путешествий по Сибири</h1>
+        <div id="scene"></div>
+        <div id="choices"></div>
+    </div>
+    <script>
+    const questions = [
+        {
+            text: "Что вам больше по душе?",
+            choices: [
+                { text: "Леса и животные", value: "taiga" },
+                { text: "Горы и приключения", value: "altai" },
+                { text: "Вода и рыбалка", value: "baikal" },
+                { text: "Реки и простор", value: "lena" },
+                { text: "Суровая красота и север", value: "tundra" }
+            ]
+        },
+        {
+            text: "Какой отдых вы предпочитаете?",
+            choices: [
+                { text: "Спокойные прогулки", value: "taiga" },
+                { text: "Активный туризм", value: "altai" },
+                { text: "Плавание и катание на лодке", value: "baikal" },
+                { text: "Наблюдать за птицами", value: "lena" },
+                { text: "Любоваться северной природой", value: "tundra" }
+            ]
+        },
+        {
+            text: "Что бы вы хотели увидеть?",
+            choices: [
+                { text: "Редких зверей", value: "taiga" },
+                { text: "Горные вершины", value: "altai" },
+                { text: "Глубокое озеро", value: "baikal" },
+                { text: "Величественную реку", value: "lena" },
+                { text: "Мхи, лишайники и северных оленей", value: "tundra" }
+            ]
+        }
+    ];
+
+    const results = {
+        taiga: {
+            name: "Тайга",
+            desc: "Вам стоит отправиться в сибирскую тайгу! Здесь вы встретите белок, медведей, услышите пение птиц и насладитесь тишиной леса.",
+            img: "img/sibtaiga.jpg"
+        },
+        altai: {
+            name: "Горы Алтая",
+            desc: "Вам подойдут горы Алтая! Здесь вас ждут потрясающие виды, чистый воздух, походы и настоящие приключения.",
+            img: "img/altaimountains.jpg"
+        },
+        baikal: {
+            name: "Озеро Байкал",
+            desc: "Вам стоит поехать на Байкал — самое глубокое озеро в мире! Здесь можно купаться, ловить рыбу и любоваться кристально чистой водой.",
+            img: "img/baikal.jpg"
+        },
+        lena: {
+            name: "Река Лена",
+            desc: "Вам понравится путешествие по реке Лене! Это простор, уникальные скалы и возможность наблюдать за птицами и животными.",
+            img: "img/lena.jpg"
+        },
+        tundra: {
+            name: "Тундра",
+            desc: "Вам стоит отправиться в тундру! Здесь вы увидите северных оленей, мхи, лишайники и суровую красоту севера.",
+            img: "img/tundra.jpg"
+        }
+    };
+
+    let current = 0;
+    let scores = { taiga: 0, altai: 0, baikal: 0, lena: 0, tundra: 0 };
+
+    function renderQuestion() {
+        if (current < questions.length) {
+            const q = questions[current];
+            document.getElementById('scene').innerHTML = `<p>${q.text}</p>`;
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = '';
+            q.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.textContent = choice.text;
+                btn.onclick = () => {
+                    scores[choice.value]++;
+                    current++;
+                    renderQuestion();
+                };
+                choicesDiv.appendChild(btn);
+            });
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        // Определяем максимальный балл
+        let max = 0;
+        let best = "taiga";
+        for (let key in scores) {
+            if (scores[key] > max) {
+                max = scores[key];
+                best = key;
+            }
+        }
+        const res = results[best];
+        document.getElementById('scene').innerHTML = `
+            <h2>${res.name}</h2>
+            <img src="${res.img}" alt="${res.name}" style="max-width:100%;border-radius:14px;box-shadow:0 2px 12px rgba(38,166,154,0.10);margin-bottom:24px;">
+            <p>${res.desc}</p>
+        `;
+        document.getElementById('choices').innerHTML = `<button onclick="location.reload()">Пройти ещё раз</button>`;
+    }
+
+    renderQuestion();
+
+    // Пасхалка: если ввести "сибирь" на клавиатуре, переход на секретную страницу
+    let secret = '';
+    const secretWord = 'сибирь';
+    document.addEventListener('keydown', function(e) {
+        secret += e.key.toLowerCase();
+        if (secret.length > secretWord.length) {
+            secret = secret.slice(-secretWord.length);
+        }
+        if (secret === secretWord) {
+            window.location.href = 'secret.html';
+        }
+    });
+    </script>
+</body>
+</html>
