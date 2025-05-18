@@ -165,7 +165,9 @@
                 const btn = document.createElement('button');
                 btn.textContent = choice.text;
                 btn.onclick = () => {
-                    scores[choice.value]++;
+                    // Первый вопрос дает 1 балл, остальные по 0.5
+                    const points = current === 0 ? 1 : 0.5;
+                    scores[choice.value] += points;
                     current++;
                     renderQuestion();
                 };
